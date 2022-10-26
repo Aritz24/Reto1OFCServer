@@ -39,9 +39,6 @@ public class DAOImplementation {
                 .getString("password");
     }
 
-
-
-    
     public void openConnection (){
         try {
             con= (Connection) DriverManager.getConnection
