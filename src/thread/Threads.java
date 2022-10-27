@@ -5,12 +5,18 @@
  */
 package thread;
 
+import com.mysql.jdbc.Connection;
+import factory.DAOFactory;
+import implementation.DAOImplementation;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import messagePackage.Message;
+import pool.ConnectionPool;
 
 /**
  *
@@ -25,42 +31,44 @@ public class Threads extends Thread {
     private DAOFactory f;
     private DAOImplementation dao;
     private Message menenv;
+    private ConnectionPool p;
+    private Stack pool;
+    private Connection con;
 
     public Threads(Socket clientSocket) {
         this.s = clientSocket;
     }
 
     @Override
-    public synchronized void run() {
+    public void run() {
+        
+        pool= new Stack();
 
         while (!this.isInterrupted()) {
 
             try {
-                menenv= new Message();
+                menenv = new Message();
                 env = new ObjectOutputStream(s.getOutputStream());
                 recib = new ObjectInputStream(s.getInputStream());
-                men = recib.readUTF();
-
-                //Si el pool de conexiones tiene conexiones entonces llamar a esa conexión
-                if (true) {
-
-                } else {
-                    //Sino crear conexión nueva
-                    f.makeConecction();
+                try {
+                    men = (Message) recib.readObject();
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                if (men.getAction().equalsIgnoreCase("SignIn")) {
+                con = p.getConnnection(pool);
+                f= new DAOFactory();
+                dao= f.makeDao(con);
+                
+                if (men.getAcType().toString().equalsIgnoreCase("SIGNIN")){
+                     men.getUsu();
+                   dao.SignIn(men.getUsu());
                     
-                    if (dao.validateDates(men)) {
-                        menenv.setMessage("Sesion iniciada");
-                    } else {
-                         menenv.setMessage("La contraseña o el usuario no son correctos");
-                    }
-                    env.writeObject(menenv);
-
-                } else if (men.getAction().equalsIgnoreCase("SignUp")) {
-                    dao.createNewUser(men);
+                } else if (men.getAcType().toString().equalsIgnoreCase("SIGNUP")) {
+                   dao.SignUp(men.getUsu());
                 }
+                
+                env.writeObject(menenv);
 
             } catch (IOException ex) {
                 Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);

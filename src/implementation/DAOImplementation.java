@@ -12,12 +12,14 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import interfacePackage.DaoInterface;
+import userPackage.User;
 
 /**
  *
  * @author Aritz
  */
-public class DAOImplementation {
+public class DAOImplementation implements DaoInterface{
     
     private String driver;
     private String url;
@@ -28,43 +30,28 @@ public class DAOImplementation {
     private PreparedStatement stmt;
     
    
-    public DAOImplementation() {
-         this.driver= ResourceBundle.getBundle("ConfAchieve.properties")
-                .getString("driver");
-        this.url= ResourceBundle.getBundle("ConfAchieve.properties")
-                .getString("url");
-        this.user= ResourceBundle.getBundle("ConfAchieve.properties")
-                .getString("user");
-        this.password= ResourceBundle.getBundle("ConfAchieve.properties")
-                .getString("password");
+  
+
+    public DAOImplementation(Connection con) {
+         this.con=con;
     }
 
-    public void openConnection (){
-        try {
-            con= (Connection) DriverManager.getConnection
-        (url, user, password);
-        } catch (SQLException ex) {
-            Logger.getLogger(DAOImplementation.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
+    @Override
+    public User SignIn(User usu) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void SignUp(User usu) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void LogOut() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    public void closeConnection() {
-        if (stmt!= null) {
-            try {
-                stmt.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        if (con!= null) {
-            try {
-                con.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(DAOImplementation.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            }
-        }
-    }
     
+    
+
 }

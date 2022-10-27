@@ -17,51 +17,69 @@ import java.util.logging.Logger;
 
 /**
  *
+ * In this class we save and create connections to the DB and send them to
+ * the users for their use.
  * @author Aritz
  */
-public class ConectionPool {
+public class ConnectionPool {
     
     private static Stack pool;
    
-   
-
-    public ConectionPool() {
-
-    }
-
-    public void getConnnection(){
+/**
+ * Checks if the Stack has connections and if it does, one of them is sent, if 
+ * not, a new connection is created and sent.
+ * @param pool It is the Stack in which the connections can be stored.
+ * @return Retorna una conexion.
+ */
+    public Connection getConnnection(Stack pool){
+       
         if (pool.isEmpty()) {
-            
+            return (Connection) pool.push(newConnection());
+        }else{
+            return (Connection) pool.pop();
         }
     }
-    public void newConnection() {
+    
+    /**
+     * Creates a new connection to the DB
+     * @return Returns a connection to the DB
+     */
+    public Connection newConnection() {
         String driver;
         String url;
         String user;
         String password;
         Connection con;
-        driver = ResourceBundle.getBundle("ConfAchieve.properties")
+        driver = ResourceBundle.getBundle("properties.PropertiesFile")
                 .getString("driver");
-        url = ResourceBundle.getBundle("ConfAchieve.properties")
+        url = ResourceBundle.getBundle("properties.PropertiesFile")
                 .getString("url");
-        user = ResourceBundle.getBundle("ConfAchieve.properties")
+        user = ResourceBundle.getBundle("properties.PropertiesFile")
                 .getString("user");
-        password = ResourceBundle.getBundle("ConfAchieve.properties")
+        password = ResourceBundle.getBundle("properties.PropertiesFile")
                 .getString("password");
         try {
             con = (Connection) DriverManager.getConnection(url, user, password);
+             return con;
         } catch (SQLException ex) {
             Logger.getLogger(DAOImplementation.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
+        return null;
+       
     }
 
+    /**
+     * Closes the connection to the DB
+     * @param con
+     * @param stmt 
+     */
     public void closeConnection(Connection con, PreparedStatement stmt) {
         if (stmt != null) {
             try {
                 stmt.close();
             } catch (SQLException ex) {
-                Logger.getLogger(ConectionPool.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ConnectionPool.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         if (con != null) {
@@ -73,5 +91,4 @@ public class ConectionPool {
             }
         }
     }
-
 }

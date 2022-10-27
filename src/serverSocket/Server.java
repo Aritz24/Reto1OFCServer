@@ -8,6 +8,10 @@ package serverSocket;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import thread.Threads;
@@ -16,23 +20,41 @@ import thread.Threads;
  *
  * @author 2dam
  */
-public class SocketServer {
+public class Server {
 
     private ServerSocket ss;
     private Socket clientSocket;
     private Threads th;
+    private int contador=0;
+    private ArrayList<Threads> hilos= new ArrayList<>();;
 
     public static void main(String[] args) {
-        // TODO code application logic here
+        Server server= new Server();
     }
 
-    public SocketServer() {
-
+    public Server() {
+        
+     
         try {
             ss = new ServerSocket();
             clientSocket = ss.accept();
 
-            th = new Threads(clientSocket);
+            
+            for (int i = 0; i < hilos.size(); i++) {
+                if (!hilos.get(i).isAlive()) {
+                    hilos.remove(i);
+                }
+               
+
+                
+            }
+            if (hilos.size()<10) {
+                th = new Threads(clientSocket);
+                hilos.add(th);
+                th.start();
+            }
+            
+            
         } catch (IOException ex) {
             Logger.getLogger(ServerSocket.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
