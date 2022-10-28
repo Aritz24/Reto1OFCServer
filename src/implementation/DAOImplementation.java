@@ -6,12 +6,14 @@
 package implementation;
 
 import com.mysql.jdbc.Connection;
-import java.sql.DriverManager;
+import exceptions.LoginPasswordException;
+import exceptions.LoginUsernameAndPasswordException;
+import exceptions.LoginUsernameException;
+import exceptions.ServerConnectionException;
+import exceptions.SignUpEmailAndUsernameException;
+import exceptions.SignUpEmailException;
+import exceptions.SignUpUsernameException;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import interfacePackage.DaoInterface;
 import userPackage.User;
 
@@ -20,11 +22,6 @@ import userPackage.User;
  * @author Aritz
  */
 public class DAOImplementation implements DaoInterface{
-    
-    private String driver;
-    private String url;
-    private String user;
-    private String password;
     
     private Connection con;
     private PreparedStatement stmt;
@@ -37,19 +34,21 @@ public class DAOImplementation implements DaoInterface{
     }
 
     @Override
-    public User SignIn(User usu) {
+    public User SignIn(User usu) throws LoginUsernameException, LoginPasswordException, LoginUsernameAndPasswordException, ServerConnectionException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void SignUp(User usu) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void SignUp(User usu) throws SignUpUsernameException, SignUpEmailException, SignUpEmailAndUsernameException, ServerConnectionException {
+        
+        stmt = (com.mysql.jdbc.PreparedStatement) con.prepareStatement();
     }
 
     @Override
     public void LogOut() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
     
     
     

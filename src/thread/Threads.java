@@ -6,6 +6,13 @@
 package thread;
 
 import com.mysql.jdbc.Connection;
+import exceptions.LoginPasswordException;
+import exceptions.LoginUsernameAndPasswordException;
+import exceptions.LoginUsernameException;
+import exceptions.ServerConnectionException;
+import exceptions.SignUpEmailAndUsernameException;
+import exceptions.SignUpEmailException;
+import exceptions.SignUpUsernameException;
 import factory.DAOFactory;
 import implementation.DAOImplementation;
 import java.io.IOException;
@@ -55,17 +62,38 @@ public class Threads extends Thread {
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
+                //ES UNA PRUEBA, TRANQUILO JAVI
+                System.out.println(men.getAcType());
                 con = p.getConnnection(pool);
                 f= new DAOFactory();
                 dao= f.makeDao(con);
                 
                 if (men.getAcType().toString().equalsIgnoreCase("SIGNIN")){
-                     men.getUsu();
-                   dao.SignIn(men.getUsu());
+                    try {
+                        dao.SignIn(men.getUsu());
+                    } catch (LoginUsernameException ex) {
+                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (LoginPasswordException ex) {
+                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (LoginUsernameAndPasswordException ex) {
+                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (ServerConnectionException ex) {
+                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     
                 } else if (men.getAcType().toString().equalsIgnoreCase("SIGNUP")) {
-                   dao.SignUp(men.getUsu());
+                    try {
+                        dao.SignUp(men.getUsu());
+                        
+                    } catch (SignUpUsernameException ex) {
+                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (SignUpEmailException ex) {
+                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (SignUpEmailAndUsernameException ex) {
+                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (ServerConnectionException ex) {
+                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
                 
                 env.writeObject(menenv);

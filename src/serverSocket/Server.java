@@ -8,10 +8,8 @@ package serverSocket;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import thread.Threads;
@@ -26,7 +24,7 @@ public class Server {
     private Socket clientSocket;
     private Threads th;
     private int contador=0;
-    private ArrayList<Threads> hilos= new ArrayList<>();;
+    private static ArrayList<Threads> hilos= new ArrayList<>();;
 
     public static void main(String[] args) {
         Server server= new Server();
@@ -34,9 +32,10 @@ public class Server {
 
     public Server() {
         
-     
         try {
-            ss = new ServerSocket();
+            ss = new ServerSocket(Integer.valueOf(ResourceBundle.
+                    getBundle("properties.PropertiesFile")
+                .getString("port")));
             clientSocket = ss.accept();
 
             
@@ -44,9 +43,6 @@ public class Server {
                 if (!hilos.get(i).isAlive()) {
                     hilos.remove(i);
                 }
-               
-
-                
             }
             if (hilos.size()<10) {
                 th = new Threads(clientSocket);
