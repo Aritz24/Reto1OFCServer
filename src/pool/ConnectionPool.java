@@ -23,7 +23,6 @@ import java.util.logging.Logger;
  */
 public class ConnectionPool {
     
-    private static Stack pool;
    
 /**
  * Checks if the Stack has connections and if it does, one of them is sent, if 
@@ -55,7 +54,7 @@ public class ConnectionPool {
         url = ResourceBundle.getBundle("properties.PropertiesFile")
                 .getString("url");
         user = ResourceBundle.getBundle("properties.PropertiesFile")
-                .getString("user");
+                .getString("username");
         password = ResourceBundle.getBundle("properties.PropertiesFile")
                 .getString("password");
         try {
@@ -71,17 +70,10 @@ public class ConnectionPool {
 
     /**
      * Closes the connection to the DB
-     * @param con
-     * @param stmt 
+     * @param con The connection that needs to be closed
      */
-    public void closeConnection(Connection con, PreparedStatement stmt) {
-        if (stmt != null) {
-            try {
-                stmt.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(ConnectionPool.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+    public void closeConnection(Connection con) {
+  
         if (con != null) {
             try {
                 con.close();

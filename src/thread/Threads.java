@@ -6,6 +6,7 @@
 package thread;
 
 import com.mysql.jdbc.Connection;
+import enumPackcage.ExceptionType;
 import exceptions.LoginPasswordException;
 import exceptions.LoginUsernameAndPasswordException;
 import exceptions.LoginUsernameException;
@@ -26,7 +27,9 @@ import messagePackage.Message;
 import pool.ConnectionPool;
 
 /**
- *
+ *In this class we maintain the connection to the client side and when that
+ * connection is lost we will save it in the connection stack instead 
+ * of closing it.
  * @author Aritz
  */
 public class Threads extends Thread {
@@ -42,64 +45,84 @@ public class Threads extends Thread {
     private Stack pool;
     private Connection con;
 
-    public Threads(Socket clientSocket) {
+    /**
+     * Thread builder
+     * @param clientSocket Client conexion
+     * @param pool Conexion Stack
+     */
+    public Threads(Socket clientSocket, Stack pool) {
         this.s = clientSocket;
+        this.pool = pool;
     }
 
     @Override
     public void run() {
-        
-        pool= new Stack();
 
         while (!this.isInterrupted()) {
 
             try {
+                p = new ConnectionPool();
                 menenv = new Message();
-                env = new ObjectOutputStream(s.getOutputStream());
+
                 recib = new ObjectInputStream(s.getInputStream());
                 try {
                     men = (Message) recib.readObject();
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                //ES UNA PRUEBA, TRANQUILO JAVI
-                System.out.println(men.getAcType());
-                con = p.getConnnection(pool);
-                f= new DAOFactory();
-                dao= f.makeDao(con);
-                
-                if (men.getAcType().toString().equalsIgnoreCase("SIGNIN")){
-                    try {
-                        dao.SignIn(men.getUsu());
-                    } catch (LoginUsernameException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (LoginPasswordException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (LoginUsernameAndPasswordException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (ServerConnectionException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                con= p.getConnnection(pool);
+               
+
+                f = new DAOFactory();
+                dao = f.makeDao(con);
+
+                if (men.getUsu() != null) {
+                    env = new ObjectOutputStream(s.getOutputStream());
+                    if (men.getAcType().toString().equalsIgnoreCase("SIGNIN")) {
+                        try {
+                            dao.SignIn(men.getUsu());
+
+                        } catch (LoginUsernameException ex) {
+                            Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                            menenv.setExType(ExceptionType.LOGINUSERNAMEEXCEPTION);
+                        } catch (LoginPasswordException ex) {
+                            Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                            menenv.setExType(ExceptionType.LOGINPASSWORDEXCEPTION);
+                        } catch (LoginUsernameAndPasswordException ex) {
+                            Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                            menenv.setExType(ExceptionType.SIGNUPEMAILANDUSERNAMEEXCEPTION);
+                        } catch (ServerConnectionException ex) {
+                            Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                    } else if (men.getAcType().toString().equalsIgnoreCase("SIGNUP")) {
+                        try {
+                            dao.SignUp(men.getUsu());
+
+                        } catch (SignUpUsernameException ex) {
+                            Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                            menenv.setExType(ExceptionType.SIGNUPUSERNAMEEXCEPTION);
+
+                        } catch (SignUpEmailException ex) {
+                            Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                            menenv.setExType(ExceptionType.SIGNUPEMAILEXCEPTION);
+                        } catch (SignUpEmailAndUsernameException ex) {
+                            Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                            menenv.setExType(ExceptionType.SIGNUPEMAILANDUSERNAMEEXCEPTION);
+                        } catch (ServerConnectionException ex) {
+                            Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
-                    
-                } else if (men.getAcType().toString().equalsIgnoreCase("SIGNUP")) {
-                    try {
-                        dao.SignUp(men.getUsu());
-                        
-                    } catch (SignUpUsernameException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (SignUpEmailException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (SignUpEmailAndUsernameException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (ServerConnectionException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+
+                    env.writeObject(menenv);
                 }
-                
-                env.writeObject(menenv);
 
             } catch (IOException ex) {
+
                 Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                pool.push(con);
+               
+                this.interrupt();
             }
         }
     }
