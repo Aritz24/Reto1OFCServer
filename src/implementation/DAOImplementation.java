@@ -63,7 +63,7 @@ public class DAOImplementation implements DaoInterface{
    
     @Override
     public void SignUp(User usu) throws SignUpUsernameException, SignUpEmailException, SignUpEmailAndUsernameException, ServerConnectionException {
-       
+      
         if (comprobarUsuario(usu)) {
             throw new SignUpUsernameException("");
         }
@@ -76,8 +76,8 @@ public class DAOImplementation implements DaoInterface{
             stmt.setString(1, usu.getLogin());
             stmt.setString(2, usu.getEmail());
             stmt.setString(3, usu.getFullname());
-            stmt.setString(4, usu.getStatus().toString());
-            stmt.setString(5, usu.getPrivileges().toString());
+            stmt.setString(4, usu.getStatus().name());
+            stmt.setString(5, usu.getPrivileges().name());
             stmt.setString(6, usu.getPassword());
             
             stmt.executeUpdate();

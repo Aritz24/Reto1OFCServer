@@ -5,6 +5,7 @@
  */
 package serverSocket;
 
+import java.io.IOException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -17,36 +18,37 @@ import static org.junit.Assert.*;
  * @author Aritz
  */
 public class ServerTest {
-    
+
     public ServerTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
 
     /**
      * Test of main method, of class Server.
+     *
+     * @throws java.net.SocketException
      */
     @Test
-    public void testMain() {
-        System.out.println("main");
+    public void testMain() throws IOException{
+       
         String[] args = null;
-        Server.main(args);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+      
+
     }
-    
 }
