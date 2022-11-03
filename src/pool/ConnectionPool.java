@@ -5,9 +5,9 @@
  */
 package pool;
 
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
+
 import implementation.DAOImplementation;
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -33,7 +33,7 @@ public class ConnectionPool {
     public Connection getConnnection(Stack pool){
        
         if (pool.isEmpty()) {
-            return (Connection) pool.push(newConnection());
+            return (Connection) newConnection();
         }else{
             return (Connection) pool.pop();
         }

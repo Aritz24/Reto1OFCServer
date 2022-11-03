@@ -25,7 +25,7 @@ public class Server {
     private Socket clientSocket;
     private Threads th;
     private static ArrayList<Threads> hilos;
-    private Stack pool = new Stack();
+    private static Stack pool= new Stack();
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -34,6 +34,7 @@ public class Server {
 
     public Server() {
          hilos = new ArrayList<>();
+         
          
         while (true) {
             
@@ -51,10 +52,13 @@ public class Server {
                             }
                         }
                     }
-
+                    
+                     
                     if (hilos.size() < 10) {
                         th = new Threads(clientSocket, pool);
+                       
                         hilos.add(th);
+                        
                         th.start();
                     }
 

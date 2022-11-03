@@ -5,9 +5,10 @@
  */
 package factory;
 
-import com.mysql.jdbc.Connection;
+
 import implementation.DAOImplementation;
-import interfacePackage.DaoInterface;
+import interfacePackage.mainInterface;
+import com.mysql.jdbc.Connection;
 
 /**
  *
@@ -20,7 +21,7 @@ public class DAOFactory {
     }
     
     public DAOImplementation makeDao(Connection con){
-        DaoInterface dao = (DaoInterface) 
+        mainInterface dao = (mainInterface) 
                 new DAOImplementation(con);
         return (DAOImplementation) dao;
     }

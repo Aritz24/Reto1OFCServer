@@ -5,8 +5,9 @@
  */
 package pool;
 
-import com.mysql.jdbc.Connection;
+
 import implementation.DAOImplementation;
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -74,7 +75,7 @@ public class ConnectionPoolTest {
     public void testNewConnection() {
        ConnectionPool prueba = new ConnectionPool();
        Connection con;
-       con= prueba.newConnection();
+       con= (Connection) prueba.newConnection();
        
         assertNotNull("Si no es nulo entonces hay una conexion", con);
     }

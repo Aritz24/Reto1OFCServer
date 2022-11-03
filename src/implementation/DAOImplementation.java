@@ -17,7 +17,7 @@ import exceptions.SignUpUsernameException;
 
 import java.sql.PreparedStatement;
 
-import interfacePackage.DaoInterface;
+import interfacePackage.mainInterface;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -25,6 +25,8 @@ import java.util.logging.Logger;
 
 
 import userPackage.User;
+import userPackage.UserPrivilege;
+import userPackage.UserStatus;
 
 /**
  * With the implementation we will connect to the DB and make the necessary 
@@ -32,7 +34,7 @@ import userPackage.User;
  * @author Aritz
  */
 
-public class DAOImplementation implements DaoInterface{
+public class DAOImplementation implements mainInterface{
 
     private Connection con;
     private PreparedStatement stmt;
@@ -44,25 +46,85 @@ public class DAOImplementation implements DaoInterface{
     public DAOImplementation(Connection con) {
          this.con=con;
     }
-    private final String selectUserpasswd="SELECT * FROM user WHERE Login = ? and Password=?";
+    private final String selectUserpasswd="SELECT * FROM user WHERE Login = ? "
+            + "and Password=?";
     private final String selectUser="SELECT * FROM user WHERE Login = ?";
     private final String selectEmail="SELECT * FROM user WHERE Email = ?";
-    private final String insertUser="INSERT INTO user(Login,Email,FullName,UserStatus,Privilege,Password,LastPasswordChange) VALUES(?,?,?,?,?,?,now())";
-    private final String exitUser="INSERT INTO signin(LastSignIn,id) VALUES(CURRENT_TIMESTAMP(), (SELECT id FROM user WHERE Login = ?))";
-    private final String checkPassword = "SELECT * FROM user WHERE Login = ? and Password=?";
-    private final String removeFirstSignIn = "DELETE FROM signin WHERE LastSignIn = ? and id = ?";
-    private final String selectLastSignIn = "SELECT MIN(LastSignIn) FROM signin where id = ?";
-    private final String updateLastSignIn = "UPDATE signin SET LastSignIn = CURRENT_TIMESTAMP() WHERE id IN(SELECT id FROM user)";
+    private final String insertUser="INSERT INTO user(Login,Email,FullName,"
+            + "UserStatus,Privilege,Password,LastPasswordChange) "
+            + "VALUES(?,?,?,?,?,?,now())";
+    private final String exitUser="INSERT INTO signin(LastSignIn,id) "
+            + "VALUES(CURRENT_TIMESTAMP(), (SELECT id FROM user WHERE "
+            + "Login = ?))";
+    private final String checkPassword = "SELECT * FROM user WHERE Login = ? "
+            + "and Password=?";
+    private final String removeFirstSignIn = "DELETE FROM signin WHERE "
+            + "LastSignIn = ? and id = ?";
+    private final String selectLastSignIn = "SELECT MIN(LastSignIn) FROM"
+            + " signin where id = ?";
+    private final String updateLastSignIn = "UPDATE signin SET LastSignIn ="
+            + " CURRENT_TIMESTAMP() WHERE id IN(SELECT id FROM user)";
+      private final String selectPassword="SELECT Login FROM user "
+            + "WHERE Login = ? and Password=?";
     
     
     @Override
-    public User SignIn(User usu) throws LoginUsernameException, LoginPasswordException, LoginUsernameAndPasswordException, ServerConnectionException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public User signIn(User usu) throws LoginUsernameException, 
+            LoginPasswordException, 
+            LoginUsernameAndPasswordException, ServerConnectionException {
+        ResultSet rs = null;
+        if(!comprobarUsuario(usu)){
+            throw new LoginUsernameException("");
+        }
+        if(!comprobarPassword(usu)){
+            throw new LoginPasswordException("");
+        }
+        try {
+            stmt = con.prepareStatement(selectUserpasswd);
+            stmt.setString(1, usu.getUsername());
+            stmt.setString(2, usu.getPassword());
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                if (!rs.getString("Login").equalsIgnoreCase(usu.getUsername())
+                        || !rs.getString("Password").
+                                equalsIgnoreCase(usu.getPassword())) {
+                    throw new LoginUsernameAndPasswordException("");
+                } else {
+                    usu.setUsername(rs.getString("Login"));
+                    usu.setPassword(rs.getString("Password"));
+                    usu.setEmail(rs.getString("Email"));
+                    usu.setFullname(rs.getString("FullName"));
+                    usu.setStatus((UserStatus) rs.getObject("UserStatus"));
+                    usu.setPrivileges((UserPrivilege) 
+                        rs.getObject("Privilege"));
+                    usu.setLastPasswordChange
+                        (rs.getTimestamp("LastPasswordChange"));
+                }
+
+            }
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOImplementation.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }finally{
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DAOImplementation.class.getName())
+                            .log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return usu;
     }
+    
 
    
     @Override
-    public void SignUp(User usu) throws SignUpUsernameException, SignUpEmailException, SignUpEmailAndUsernameException, ServerConnectionException {
+    public void signUp(User usu) throws SignUpUsernameException, SignUpEmailException, SignUpEmailAndUsernameException, ServerConnectionException {
       
         if (comprobarUsuario(usu)) {
             throw new SignUpUsernameException("");
@@ -73,7 +135,7 @@ public class DAOImplementation implements DaoInterface{
         try {
            stmt = con.prepareStatement(insertUser);
             
-            stmt.setString(1, usu.getLogin());
+            stmt.setString(1, usu.getUsername());
             stmt.setString(2, usu.getEmail());
             stmt.setString(3, usu.getFullname());
             stmt.setString(4, usu.getStatus().name());
@@ -106,17 +168,16 @@ public class DAOImplementation implements DaoInterface{
         try {
           stmt =  con.prepareStatement(selectUser);
             
-            stmt.setString(1, usu.getLogin());
+            stmt.setString(1, usu.getUsername());
             
             rs = stmt.executeQuery();
 
-            while (rs.next() || salida) {
+            while (rs.next()) {
                 
-                if (rs.getString("Login").equalsIgnoreCase(usu.getLogin())) {
+                if (rs.getString("Login").equalsIgnoreCase(usu.getUsername())) {
                     salida=false;
                 }
-              //NO SABEMOS SI CIERRA PRIMERO O HACE EL RETURN SIN CERRAR NADA
-             // return rs.getString("Login").equalsIgnoreCase(usu.getLogin());
+            
             }
         } catch (SQLException ex) {
             Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
@@ -178,12 +239,51 @@ public class DAOImplementation implements DaoInterface{
         }
         return false;
         
+    }
+    
+     public boolean comprobarPassword(User usu){
+         ResultSet rs= null;
+        
+        try {
+           stmt =con.prepareStatement(selectPassword);
+            
+            stmt.setString(1, usu.getPassword());
+            
+            rs = stmt.executeQuery();
 
+            while (rs.next()) {
+                
+                if (rs.getString("Password").
+                        equalsIgnoreCase(usu.getPassword())) {
+                   return true;
+                }else{
+                    return false;
+                 }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOImplementation.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }finally{
+             try {
+                rs.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DAOImplementation.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            }
+            try {
+                stmt.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DAOImplementation.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            }
+           
+        }
+        return false;
         
     }
 
     @Override
-    public void LogOut() {
+    public void logOut() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

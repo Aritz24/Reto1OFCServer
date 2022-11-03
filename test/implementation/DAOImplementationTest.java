@@ -33,13 +33,7 @@ public class DAOImplementationTest {
    
     public DAOImplementationTest() {
         
-        usu = new User();
-        usu.setLogin("Prueba2");
-        usu.setPassword("777");
-        usu.setEmail("prueba2.@gmail.com");
-        usu.setFullname("Prueba2");
-        usu.setPrivileges(UserPrivilege.USER);
-        usu.setStatus(UserStatus.ENABLED);
+       
         
         String driver;
         String url;
@@ -86,14 +80,14 @@ public class DAOImplementationTest {
      */
     @Test
     public void testSignIn() throws Exception {
-        System.out.println("SignIn");
-        User usu = null;
-        DAOImplementation instance = null;
-        User expResult = null;
-        User result = instance.SignIn(usu);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        User usu = new User();
+        usu.setUsername("Prueba");
+        usu.setPassword("prueba");
+        DAOImplementation prueba = new DAOImplementation(con);
+        
+        assertEquals("Si el email es igual entonces es que ha sacado bien "
+                + "los datos",prueba.signIn(usu).getEmail(),"prueba@gmail.com");
     }
 
     /**
@@ -101,11 +95,18 @@ public class DAOImplementationTest {
      */
     @Test
     public void testSignUp() throws Exception {
-       
+
         //El test solo se puede probar una vez ya que no existe un metodo de
         //borrar datos en la base de datos
+        usu = new User();
+        usu.setUsername("Prueba2");
+        usu.setPassword("777");
+        usu.setEmail("prueba2.@gmail.com");
+        usu.setFullname("Prueba2");
+        usu.setPrivileges(UserPrivilege.USER);
+        usu.setStatus(UserStatus.ENABLED);
         DAOImplementation prueba = new DAOImplementation(con);
-        prueba.SignUp(usu);
+        prueba.signUp(usu);
         
         
         assertTrue("Si es true significa que ya hay un usuario igual, lo que "
@@ -122,11 +123,11 @@ public class DAOImplementationTest {
     public void testComprobarUsuario() {
        
         User usu = new User();
-        usu.setLogin("Pepe");
+        usu.setUsername("Prueb");
         DAOImplementation prueba = new DAOImplementation(con);
         
        
-        assertTrue("Si es true significa que hay un usuario con los"
+        assertFalse("Si es true significa que hay un usuario con los"
                 + " datos indicados", prueba.comprobarUsuario(usu));
        
     }
@@ -137,7 +138,7 @@ public class DAOImplementationTest {
     @Test
     public void testComprobarEmail() {
      User usu = new User();
-        usu.setEmail("a.a@.com");
+        usu.setEmail("prueba2.@gmail.com");
         DAOImplementation prueba = new DAOImplementation(con);
         
        
@@ -152,9 +153,21 @@ public class DAOImplementationTest {
     public void testLogOut() {
         System.out.println("LogOut");
         DAOImplementation instance = null;
-        instance.LogOut();
+        instance.logOut();
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
+    }
+    
+    
+     @Test
+    public void testComprobarPassword() {
+     User usu = new User();
+        usu.setPassword("prueba");
+        DAOImplementation prueba = new DAOImplementation(con);
+        
+       
+        assertTrue("Si es true significa que hay un password identico"
+                , prueba.comprobarPassword(usu));
     }
     
 }

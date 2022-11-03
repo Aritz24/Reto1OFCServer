@@ -5,7 +5,6 @@
  */
 package thread;
 
-import com.mysql.jdbc.Connection;
 import enumPackcage.ExceptionType;
 import exceptions.LoginPasswordException;
 import exceptions.LoginUsernameAndPasswordException;
@@ -25,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import messagePackage.Message;
 import pool.ConnectionPool;
+import com.mysql.jdbc.Connection;
 
 /**
  *In this class we maintain the connection to the client side and when that
@@ -58,10 +58,11 @@ public class Threads extends Thread {
     @Override
     public void run() {
 
+         p = new ConnectionPool();
         while (!this.isInterrupted()) {
 
             try {
-                p = new ConnectionPool();
+               
                 menenv = new Message();
 
                 recib = new ObjectInputStream(s.getInputStream());
@@ -70,17 +71,17 @@ public class Threads extends Thread {
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                con= p.getConnnection(pool);
+                con= (Connection) p.getConnnection(pool);
                
 
                 f = new DAOFactory();
                 dao = f.makeDao(con);
 
-                if (men.getUsu() != null) {
+                if (men.getUser() != null) {
                     env = new ObjectOutputStream(s.getOutputStream());
                     if (men.getAcType().toString().equalsIgnoreCase("SIGNIN")) {
                         try {
-                            dao.SignIn(men.getUsu());
+                           menenv.setUser(dao.signIn(men.getUser()));
 
                         } catch (LoginUsernameException ex) {
                             Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
@@ -97,7 +98,7 @@ public class Threads extends Thread {
 
                     } else if (men.getAcType().toString().equalsIgnoreCase("SIGNUP")) {
                         try {
-                            dao.SignUp(men.getUsu());
+                            dao.signUp(men.getUser());
 
                         } catch (SignUpUsernameException ex) {
                             Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
