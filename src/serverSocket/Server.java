@@ -24,7 +24,7 @@ public class Server {
     private ServerSocket ss;
     private Socket clientSocket;
     private Threads th;
-    private static ArrayList<Threads> hilos;
+    private static ArrayList<Threads> hilos= new ArrayList<>();
     private static Stack pool= new Stack();
 
     public static void main(String[] args) {
@@ -33,8 +33,7 @@ public class Server {
     }
 
     public Server() {
-         hilos = new ArrayList<>();
-         
+     
          
         while (true) {
             
@@ -44,7 +43,7 @@ public class Server {
                         getBundle("properties.PropertiesFile")
                         .getString("port")));
                 clientSocket = ss.accept();
-
+                
                     if (!hilos.isEmpty()) {
                         for (int i = 0; i < hilos.size(); i++) {
                             if (!hilos.get(i).isAlive()) {
@@ -55,10 +54,10 @@ public class Server {
                     
                      
                     if (hilos.size() < 10) {
-                        th = new Threads(clientSocket, pool);
+                        th = new Threads(clientSocket, pool, hilos);
                        
                         hilos.add(th);
-                        
+                      
                         th.start();
                     }
 

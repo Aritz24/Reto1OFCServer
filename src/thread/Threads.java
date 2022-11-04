@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import messagePackage.Message;
 import pool.ConnectionPool;
 import com.mysql.jdbc.Connection;
+import java.util.ArrayList;
 
 /**
  *In this class we maintain the connection to the client side and when that
@@ -44,15 +45,18 @@ public class Threads extends Thread {
     private ConnectionPool p;
     private Stack pool;
     private Connection con;
+    private ArrayList<Threads> hilos;
 
     /**
      * Thread builder
      * @param clientSocket Client conexion
      * @param pool Conexion Stack
+     * @param hilos
      */
-    public Threads(Socket clientSocket, Stack pool) {
+    public Threads(Socket clientSocket, Stack pool, ArrayList hilos) {
         this.s = clientSocket;
         this.pool = pool;
+        this.hilos=hilos;
     }
 
     @Override
@@ -82,7 +86,7 @@ public class Threads extends Thread {
                     if (men.getAcType().toString().equalsIgnoreCase("SIGNIN")) {
                         try {
                            menenv.setUser(dao.signIn(men.getUser()));
-
+                           
                         } catch (LoginUsernameException ex) {
                             Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
                             menenv.setExType(ExceptionType.LOGINUSERNAMEEXCEPTION);
@@ -122,7 +126,12 @@ public class Threads extends Thread {
 
                 Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
                 pool.push(con);
-               
+                
+                for (int i = 0; i < hilos.size(); i++) {
+                    if (this.getName().equalsIgnoreCase(hilos.get(i).getName())) {
+                        hilos.remove(i);
+                    }
+                }
                 this.interrupt();
             }
         }

@@ -82,12 +82,17 @@ public class DAOImplementationTest {
     public void testSignIn() throws Exception {
 
         User usu = new User();
-        usu.setUsername("Prueba");
-        usu.setPassword("prueba");
+        usu.setUsername("Prueba2");
+        usu.setPassword("777");
         DAOImplementation prueba = new DAOImplementation(con);
+        boolean b=false;
         
-        assertEquals("Si el email es igual entonces es que ha sacado bien "
-                + "los datos",prueba.signIn(usu).getEmail(),"prueba@gmail.com");
+        if (prueba.signIn(usu).getEmail().equals("prueba2.@gmail.com")) {
+            b=true;
+        }
+        
+        assertTrue("Si el email es igual entonces es que ha sacado bien "
+                + "los datos",b);
     }
 
     /**
@@ -99,10 +104,10 @@ public class DAOImplementationTest {
         //El test solo se puede probar una vez ya que no existe un metodo de
         //borrar datos en la base de datos
         usu = new User();
-        usu.setUsername("Prueba2");
+        usu.setUsername("Prueba3");
         usu.setPassword("777");
-        usu.setEmail("prueba2.@gmail.com");
-        usu.setFullname("Prueba2");
+        usu.setEmail("prueba3.@gmail.com");
+        usu.setFullname("Prueba3");
         usu.setPrivileges(UserPrivilege.USER);
         usu.setStatus(UserStatus.ENABLED);
         DAOImplementation prueba = new DAOImplementation(con);
@@ -161,13 +166,13 @@ public class DAOImplementationTest {
     
      @Test
     public void testComprobarPassword() {
-     User usu = new User();
-        usu.setPassword("prueba");
+        User usu = new User();
+        usu.setUsername("Prueba2");
+        usu.setPassword("777");
         DAOImplementation prueba = new DAOImplementation(con);
         
-       
-        assertTrue("Si es true significa que hay un password identico"
-                , prueba.comprobarPassword(usu));
+        assertTrue("Si es true significa que hay un password identico",
+                 prueba.comprobarPassword(usu));
     }
     
 }
