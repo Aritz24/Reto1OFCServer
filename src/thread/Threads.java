@@ -19,13 +19,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import messagePackage.Message;
 import pool.ConnectionPool;
 import com.mysql.jdbc.Connection;
-import java.util.ArrayList;
 
 /**
  * In this class we maintain the connection to the client side and when that
@@ -45,8 +43,8 @@ public class Threads extends Thread {
     private Message menenv;
     private ConnectionPool p;
     private Connection con;
-    private static final Logger LOGGER = Logger.getLogger("thread/Threads");
-    private int hilos;
+    private final Logger LOGGER = Logger.getLogger("thread/Threads");
+    private static Integer hilos;
 
     /**
      * Thread builder
@@ -54,9 +52,10 @@ public class Threads extends Thread {
      * @param clientSocket Client conexion
      * @param hilos
      */
-    public Threads(Socket clientSocket, int hilos) {
+    public Threads(Socket clientSocket, Integer hilos) {
         this.s = clientSocket;
-        this.hilos = hilos;
+        Threads.hilos = hilos;
+       
     }
 
     /**
@@ -67,8 +66,8 @@ public class Threads extends Thread {
 
         p = new ConnectionPool();
 
-        /* try {
-                 sleep(10000);
+         /*try {
+                 sleep(50000);
              } catch (InterruptedException ex) {
                  Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
              }*/
@@ -132,7 +131,21 @@ public class Threads extends Thread {
                 }
                 p.devolConnection(con);
                 env.writeObject(menenv);
+                
+                  try {
+                 sleep(10000);
+             } catch (InterruptedException ex) {
+                 Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+             }
+                System.out.println(hilos);
+                hilos--;
+                System.out.println(hilos);
+                
+              
+               
+                this.interrupt();
             }
+            
 
         } catch (IOException ex) {
 

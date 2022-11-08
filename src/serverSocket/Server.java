@@ -8,7 +8,6 @@ package serverSocket;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -24,7 +23,7 @@ public class Server {
     private ServerSocket ss;
     private Socket clientSocket;
     private Threads th;
-    private static int hilos= 0;
+    private static Integer hilos= 0;
     private static final Logger LOGGER= Logger.getLogger("serverSocket/Server");
     
 
@@ -39,21 +38,24 @@ public class Server {
         
         
         while (true) {
-            
+            System.out.println("Server0: "+hilos);
             if (hilos!=10) {
                  try {
                 ss = new ServerSocket(Integer.valueOf(ResourceBundle.
                         getBundle("properties.PropertiesFile")
                         .getString("port")));
                 clientSocket = ss.accept();
+                System.out.println("Server: "+hilos);
                 
                     
                     if (hilos < 10) {
+                        hilos++;
                         th = new Threads(clientSocket, hilos);
                        
-                        hilos++;
-                      
+                        
+                      System.out.println("Server suma: "+hilos);
                         th.start();
+                        
                     }
 
                 } catch (IOException ex) {
