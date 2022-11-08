@@ -64,7 +64,7 @@ public class ConnectionPoolTest {
         for (int i = 0; i <pool.size(); i++) {
                 assertNotEquals("Si no son iguales entonces la conexion ha"
                         + " sido utilizada y sacada del pool",
-                        pool.get(i), prueba.getConnnection(pool));
+                        pool.get(i), prueba.getConnnection());
         }
     }
 
@@ -87,11 +87,17 @@ public class ConnectionPoolTest {
     public void testCloseConnection() {
        
         Connection con = BDcon();
+        Connection con2 = BDcon();
         ConnectionPool prueba = new ConnectionPool();
-        
-        prueba.closeConnection(con);
+        prueba.devolConnection(con);
+        prueba.devolConnection(con2);
+      
+        prueba.closeConnection();
+      
+       
         try {
-            assertTrue("Si es nulo entonces es que se ha cerrado", con.isClosed());
+            assertTrue("", con.isClosed());
+             //assertTrue("Si es nulo entonces es que se ha cerrado", con2.isClosed());
         } catch (SQLException ex) {
             Logger.getLogger(ConnectionPoolTest.class.getName()).log(Level.SEVERE, null, ex);
         }

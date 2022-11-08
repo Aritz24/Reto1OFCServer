@@ -22,15 +22,14 @@ import java.util.logging.Logger;
  * @author Aritz
  */
 public class ConnectionPool {
-    
+    private static Stack pool= new Stack();
    
 /**
  * Checks if the Stack has connections and if it does, one of them is sent, if 
  * not, a new connection is created and sent.
- * @param pool It is the Stack in which the connections can be stored.
  * @return Retorna una conexion.
  */
-    public Connection getConnnection(Stack pool){
+    public Connection getConnnection(){
        
         if (pool.isEmpty()) {
             return (Connection) newConnection();
@@ -59,22 +58,27 @@ public class ConnectionPool {
                 .getString("password");
         try {
             con = (Connection) DriverManager.getConnection(url, user, password);
-             return con;
+            return con;
         } catch (SQLException ex) {
             Logger.getLogger(DAOImplementation.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
         return null;
-       
+
+    }
+
+    public void devolConnection(Connection con) {
+        pool.push(con);
     }
 
     /**
-     * Closes the connection to the DB
-     * @param con The connection that needs to be closed
+     * Closes the connections to the DB
      */
-    public void closeConnection(Connection con) {
-  
-        if (con != null) {
+    public void closeConnection() {
+        Connection con;
+
+        while (!pool.isEmpty()) {
+            con = (Connection) pool.pop();
             try {
                 con.close();
             } catch (SQLException ex) {
@@ -82,5 +86,6 @@ public class ConnectionPool {
                         .log(Level.SEVERE, null, ex);
             }
         }
+
     }
 }

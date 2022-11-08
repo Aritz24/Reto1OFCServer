@@ -10,7 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.Stack;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import thread.Threads;
@@ -24,8 +24,9 @@ public class Server {
     private ServerSocket ss;
     private Socket clientSocket;
     private Threads th;
-    private static ArrayList<Threads> hilos= new ArrayList<>();
-    private static Stack pool= new Stack();
+    private static int hilos= 0;
+    private static final Logger LOGGER= Logger.getLogger("serverSocket/Server");
+    
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -34,34 +35,29 @@ public class Server {
 
     public Server() {
      
-         
+        Scanner sc= new Scanner(System.in);
+        
+        
         while (true) {
             
-            if (hilos.size()!=10) {
+            if (hilos!=10) {
                  try {
                 ss = new ServerSocket(Integer.valueOf(ResourceBundle.
                         getBundle("properties.PropertiesFile")
                         .getString("port")));
                 clientSocket = ss.accept();
                 
-                    if (!hilos.isEmpty()) {
-                        for (int i = 0; i < hilos.size(); i++) {
-                            if (!hilos.get(i).isAlive()) {
-                                hilos.remove(i);
-                            }
-                        }
-                    }
                     
-                     
-                    if (hilos.size() < 10) {
-                        th = new Threads(clientSocket, pool, hilos);
+                    if (hilos < 10) {
+                        th = new Threads(clientSocket, hilos);
                        
-                        hilos.add(th);
+                        hilos++;
                       
                         th.start();
                     }
 
                 } catch (IOException ex) {
+                    LOGGER.severe(ex.getMessage());
                     Logger.getLogger(ServerSocket.class.getName()).log(Level.SEVERE, null, ex);
 
                 } finally {

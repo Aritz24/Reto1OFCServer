@@ -25,9 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-import userPackage.User;
-import userPackage.UserPrivilege;
-import userPackage.UserStatus;
+import userPackage.*;
 
 /**
  * With the implementation we will connect to the DB and make the necessary 
