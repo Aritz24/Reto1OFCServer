@@ -78,7 +78,6 @@ public class Threads extends Thread {
 
                 Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
             }
-            con = (Connection) p.getConnnection();
           
             f = new DAOFactory();
             dao = f.makeDao();
@@ -120,7 +119,7 @@ public class Threads extends Thread {
                         Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-                p.devolConnection(con);
+               
                 env.writeObject(menenv);
 
                 

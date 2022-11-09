@@ -103,19 +103,20 @@ public class DAOImplementation implements mainInterface{
                     usu.setEmail(rs.getString("Email"));
                     usu.setFullname(rs.getString("FullName"));
                     enume= rs.getString("UserStatus");
-                    if (enume.equalsIgnoreCase(UserStatus.DISABLED.toString())) {
+                    if (enume.equalsIgnoreCase(UserStatus.DISABLED.toString())){
                         usu.setStatus(UserStatus.DISABLED);
                     }else{
                         usu.setStatus(UserStatus.ENABLED);
                     }
                      enume= rs.getString("Privilege");
-                    if (enume.equalsIgnoreCase(UserPrivilege.ADMIN.toString())) {
+                    if (enume.equalsIgnoreCase(UserPrivilege.ADMIN.toString())){
                         usu.setPrivileges(UserPrivilege.ADMIN);
-                    }else{
+                    } else {
                         usu.setPrivileges(UserPrivilege.USER);
                     }
-                    usu.setLastPasswordChange(rs.getTimestamp("LastPasswordChange"));
-                    id= rs.getInt("id");
+                    usu.setLastPasswordChange(rs.getTimestamp
+                    ("LastPasswordChange"));
+                    id = rs.getInt("id");
                 }
 
             }
@@ -134,7 +135,8 @@ public class DAOImplementation implements mainInterface{
                 try {
                     stmt.close();
                 } catch (SQLException ex) {
-                    Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(DAOImplementation.class.getName()).log
+                    (Level.SEVERE, null, ex);
                 }
             }
             lastSignIn(id, con);
@@ -164,13 +166,16 @@ public class DAOImplementation implements mainInterface{
             
             stmt.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DAOImplementation.class.getName()).log
+            (Level.SEVERE, null, ex);
         }finally{
             try {
                 stmt.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DAOImplementation.class.getName()).log
+                (Level.SEVERE, null, ex);
             }
+            ConnectionPool.devolConnection(con);
         }
     }
     
@@ -199,17 +204,20 @@ public class DAOImplementation implements mainInterface{
             }
             return null;
         } catch (SQLException ex) {
-            Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DAOImplementation.class.getName()).log
+            (Level.SEVERE, null, ex);
         }finally{
              try {
                  rs.close();
              } catch (SQLException ex) {
-                 Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                 Logger.getLogger(DAOImplementation.class.getName()).log
+                (Level.SEVERE, null, ex);
              }
              try {
                  stmt.close();
              } catch (SQLException ex) {
-                 Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                 Logger.getLogger(DAOImplementation.class.getName()).log
+                (Level.SEVERE, null, ex);
              }
         }
         return null;
@@ -239,17 +247,20 @@ public class DAOImplementation implements mainInterface{
 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DAOImplementation.class.getName()).log
+            (Level.SEVERE, null, ex);
         }finally{
             try {
                 rs.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DAOImplementation.class.getName()).log
+                (Level.SEVERE, null, ex);
             }
             try {
                 stmt.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DAOImplementation.class.getName()).log
+                (Level.SEVERE, null, ex);
             }
         }
         return 0;
@@ -275,18 +286,22 @@ public class DAOImplementation implements mainInterface{
             stmt.executeUpdate();
           
         } catch (SQLException ex) {
-            Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DAOImplementation.class.getName()).log
+            (Level.SEVERE, null, ex);
         }finally{
             try {
                 stmt.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DAOImplementation.class.getName()).log
+                (Level.SEVERE, null, ex);
             }
         }
     }
 
     @Override
-    public void signUp(User usu) throws SignUpUsernameException, SignUpEmailException, SignUpEmailAndUsernameException, ServerConnectionException {
+    public void signUp(User usu) throws SignUpUsernameException,
+            SignUpEmailException, SignUpEmailAndUsernameException, 
+            ServerConnectionException {
         con = (Connection) ConnectionPool.getConnnection();
         if (comprobarUsuario(usu, con)) {
             throw new SignUpUsernameException("");
@@ -307,13 +322,16 @@ public class DAOImplementation implements mainInterface{
             stmt.executeUpdate();
 
         } catch (SQLException ex) {
-            Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DAOImplementation.class.getName()).log
+            (Level.SEVERE, null, ex);
         } finally {
             try {
                 stmt.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DAOImplementation.class.getName()).log
+                (Level.SEVERE, null, ex);
             }
+            ConnectionPool.devolConnection(con);
         }
     }
 
@@ -327,7 +345,6 @@ public class DAOImplementation implements mainInterface{
      */
     public boolean comprobarUsuario(User usu, Connection con) {
         ResultSet rs = null;
-        Boolean salida = true;
 
         try {
             stmt = con.prepareStatement(selectUser);
@@ -342,17 +359,20 @@ public class DAOImplementation implements mainInterface{
 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DAOImplementation.class.getName()).log
+            (Level.SEVERE, null, ex);
         } finally {
             try {
                 rs.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DAOImplementation.class.getName()).log
+                (Level.SEVERE, null, ex);
             }
             try {
                 stmt.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DAOImplementation.class.getName()).log
+                (Level.SEVERE, null, ex);
             }
 
         }
@@ -383,17 +403,20 @@ public class DAOImplementation implements mainInterface{
 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DAOImplementation.class.getName()).log
+            (Level.SEVERE, null, ex);
         } finally {
             try {
                 rs.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DAOImplementation.class.getName()).log
+                (Level.SEVERE, null, ex);
             }
             try {
                 stmt.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DAOImplementation.class.getName()).log
+                (Level.SEVERE, null, ex);
             }
            
         }
@@ -423,17 +446,20 @@ public class DAOImplementation implements mainInterface{
 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DAOImplementation.class.getName()).log
+            (Level.SEVERE, null, ex);
         }finally{
              try {
                 rs.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DAOImplementation.class.getName()).log
+                (Level.SEVERE, null, ex);
             }
             try {
                 stmt.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DAOImplementation.class.getName()).log
+                (Level.SEVERE, null, ex);
             }
            
         }
@@ -443,6 +469,7 @@ public class DAOImplementation implements mainInterface{
 
     @Override
     public synchronized void logOut() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); 
+        //To change body of generated methods, choose Tools | Templates.
     }
 }

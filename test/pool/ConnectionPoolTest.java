@@ -7,17 +7,12 @@ package pool;
 
 
 import implementation.DAOImplementation;
-import java.sql.Connection;
+import com.mysql.jdbc.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -45,42 +40,24 @@ public class ConnectionPoolTest {
        
     public ConnectionPoolTest() {
         
-        Connection connnection;
-        
-        for (int i = 0; i < 10; i++) {
-            connnection = BDcon();
-            pool.push(connnection);
-        }
+      
     }
 
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
 
     /**
      * Test of getConnnection method, of class ConnectionPool.
      */
     @Test
     public void testGetConnnection() {
-       ConnectionPool prueba = new ConnectionPool();
-  
-        for (int i = 0; i <pool.size(); i++) {
-                assertNotEquals("Si no son iguales entonces la conexion ha"
-                        + " sido utilizada y sacada del pool",
-                        pool.get(i), prueba.getConnnection());
-        }
+      
+            Connection con = null;
+        
+                assertEquals("Si no son iguales entonces la conexion ha"
+                        + " sido utilizada y sacada del pool",con
+                       , ConnectionPool.getConnnection());
+
+                ConnectionPool.closeConnection();       
+        
     }
 
     /**
@@ -88,9 +65,9 @@ public class ConnectionPoolTest {
      */
     @Test
     public void testNewConnection() {
-       ConnectionPool prueba = new ConnectionPool();
+       
        Connection con;
-       con= (Connection) prueba.newConnection();
+       con= (Connection) ConnectionPool.newConnection();
        
         assertNotNull("Si no es nulo entonces hay una conexion", con);
     }
@@ -103,11 +80,11 @@ public class ConnectionPoolTest {
        
         Connection con = BDcon();
         Connection con2 = BDcon();
-        ConnectionPool prueba = new ConnectionPool();
-        prueba.devolConnection(con);
-        prueba.devolConnection(con2);
+        
+        ConnectionPool.devolConnection(con);
+        ConnectionPool.devolConnection(con2);
       
-        prueba.closeConnection();
+        ConnectionPool.closeConnection();
       
        
         try {
@@ -116,6 +93,7 @@ public class ConnectionPoolTest {
         } catch (SQLException ex) {
             Logger.getLogger(ConnectionPoolTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+        ConnectionPool.closeConnection();
 
     }
     

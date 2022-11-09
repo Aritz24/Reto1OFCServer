@@ -104,10 +104,10 @@ public class DAOImplementationTest {
         //El test solo se puede probar una vez ya que no existe un metodo de
         //borrar datos en la base de datos
         usu = new User();
-        usu.setUsername("Prueba3");
-        usu.setPassword("777");
-        usu.setEmail("prueba3.@gmail.com");
-        usu.setFullname("Prueba3");
+        usu.setUsername("Prueba5");
+        usu.setPassword("777777");
+        usu.setEmail("prueba5.@gmail.com");
+        usu.setFullname("Prueba4");
         usu.setPrivileges(UserPrivilege.USER);
         usu.setStatus(UserStatus.ENABLED);
         DAOImplementation prueba = new DAOImplementation();

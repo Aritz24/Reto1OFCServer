@@ -6,7 +6,7 @@
 package pool;
 
 import implementation.DAOImplementation;
-import java.sql.Connection;
+import com.mysql.jdbc.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -25,16 +25,20 @@ public class ConnectionPool {
 
     private static Stack pool = new Stack();
 
-    private static String driver = ResourceBundle.getBundle("properties.PropertiesFile")
+    private static String driver = ResourceBundle.getBundle
+        ("properties.PropertiesFile")
             .getString("driver");
     
-        private static String url = ResourceBundle.getBundle("properties.PropertiesFile")
+        private static String url = ResourceBundle.getBundle
+        ("properties.PropertiesFile")
             .getString("url");
     
-        private static String user = ResourceBundle.getBundle("properties.PropertiesFile")
+        private static String user = ResourceBundle.getBundle
+        ("properties.PropertiesFile")
             .getString("username");
     
-        private static String password = ResourceBundle.getBundle("properties.PropertiesFile")
+        private static String password = ResourceBundle.getBundle
+        ("properties.PropertiesFile")
             .getString("password");
     
        private static Connection con;
@@ -63,7 +67,7 @@ public class ConnectionPool {
      *
      * @return Returns a connection to the DB
      */
-    private static Connection newConnection() {
+    public static Connection newConnection() {
 
         try {
             con = (Connection) DriverManager.getConnection(url, user, password);
@@ -92,8 +96,7 @@ public class ConnectionPool {
         Connection con;
 
         while (!pool.isEmpty()) {
-            con = (Connection) pool.pop();
-            System.out.println("POOL SIZE: " + pool.size());
+            con = (Connection) pool.pop();     
             try {
                 con.close();
             } catch (SQLException ex) {
