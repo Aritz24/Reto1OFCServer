@@ -12,18 +12,20 @@ import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import thread.Threads;
 
 /**
- *
- * @author 2dam
+ *This is the class in which we create the server connections and generate the 
+ * threads to serve the clients.
+ * @author Aritz
  */
 public class Server {
 
     private ServerSocket ss;
     private Socket clientSocket;
     private Threads th;
-    private static Integer hilos= 0;
+    private static ThreadCounter hilos= new ThreadCounter();
     private static final Logger LOGGER= Logger.getLogger("serverSocket/Server");
     
 
@@ -32,30 +34,32 @@ public class Server {
        
     }
 
+    /**
+     * Server builder
+     */
     public Server() {
-     
-        Scanner sc= new Scanner(System.in);
+
+        Scanner sc = new Scanner(System.in);
+        hilos.setCount(0);
         
-        
+        CloseApp ven= new CloseApp();
+        ven.setVisible(true);
+
         while (true) {
-            System.out.println("Server0: "+hilos);
-            if (hilos!=10) {
-                 try {
-                ss = new ServerSocket(Integer.valueOf(ResourceBundle.
-                        getBundle("properties.PropertiesFile")
-                        .getString("port")));
-                clientSocket = ss.accept();
-                System.out.println("Server: "+hilos);
-                
-                    
-                    if (hilos < 10) {
-                        hilos++;
+
+            if (hilos.getCount() != 10) {
+                try {
+                    ss = new ServerSocket(Integer.valueOf(ResourceBundle.
+                            getBundle("properties.PropertiesFile")
+                            .getString("port")));
+                    clientSocket = ss.accept();
+
+                    if (hilos.getCount() < 10) {
+                        hilos.setCount(hilos.getCount() + 1);
                         th = new Threads(clientSocket, hilos);
-                       
-                        
-                      System.out.println("Server suma: "+hilos);
+
                         th.start();
-                        
+
                     }
 
                 } catch (IOException ex) {

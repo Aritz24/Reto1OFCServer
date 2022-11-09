@@ -27,11 +27,26 @@ import static org.junit.Assert.*;
  */
 public class ConnectionPoolTest {
     
-    private  Stack pool ;
+   
+     private static String driver = ResourceBundle.getBundle("properties.PropertiesFile")
+            .getString("driver");
+    
+        private static String url = ResourceBundle.getBundle("properties.PropertiesFile")
+            .getString("url");
+    
+        private static String user = ResourceBundle.getBundle("properties.PropertiesFile")
+            .getString("username");
+    
+        private static String password = ResourceBundle.getBundle("properties.PropertiesFile")
+            .getString("password");
+    
+       private static Connection con;
+       
+       
     public ConnectionPoolTest() {
         
         Connection connnection;
-        this.pool= new Stack();
+        
         for (int i = 0; i < 10; i++) {
             connnection = BDcon();
             pool.push(connnection);
@@ -105,19 +120,7 @@ public class ConnectionPoolTest {
     }
     
     public Connection BDcon(){
-        String driver;
-        String url;
-        String user;
-        String password;
-        Connection con;
-        driver = ResourceBundle.getBundle("properties.PropertiesFile")
-                .getString("driver");
-        url = ResourceBundle.getBundle("properties.PropertiesFile")
-                .getString("url");
-        user = ResourceBundle.getBundle("properties.PropertiesFile")
-                .getString("username");
-        password = ResourceBundle.getBundle("properties.PropertiesFile")
-                .getString("password");
+      
         try {
             con = (Connection) DriverManager.getConnection(url, user, password);
              return con;

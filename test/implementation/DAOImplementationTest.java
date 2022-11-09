@@ -84,7 +84,7 @@ public class DAOImplementationTest {
         User usu = new User();
         usu.setUsername("Prueba2");
         usu.setPassword("777");
-        DAOImplementation prueba = new DAOImplementation(con);
+        DAOImplementation prueba = new DAOImplementation();
         boolean b=false;
         
         if (prueba.signIn(usu).getEmail().equals("prueba2.@gmail.com")) {
@@ -110,13 +110,13 @@ public class DAOImplementationTest {
         usu.setFullname("Prueba3");
         usu.setPrivileges(UserPrivilege.USER);
         usu.setStatus(UserStatus.ENABLED);
-        DAOImplementation prueba = new DAOImplementation(con);
+        DAOImplementation prueba = new DAOImplementation();
         prueba.signUp(usu);
         
         
         assertTrue("Si es true significa que ya hay un usuario igual, lo que "
                 + "quiere decir que si ha funcionado el introducir un "
-                + "nuevo usuario", prueba.comprobarUsuario(usu));
+                + "nuevo usuario", prueba.comprobarUsuario(usu, con));
         
         
     }
@@ -129,11 +129,11 @@ public class DAOImplementationTest {
        
         User usu = new User();
         usu.setUsername("Prueb");
-        DAOImplementation prueba = new DAOImplementation(con);
+        DAOImplementation prueba = new DAOImplementation();
         
        
         assertFalse("Si es true significa que hay un usuario con los"
-                + " datos indicados", prueba.comprobarUsuario(usu));
+                + " datos indicados", prueba.comprobarUsuario(usu, con));
        
     }
 
@@ -144,11 +144,11 @@ public class DAOImplementationTest {
     public void testComprobarEmail() {
      User usu = new User();
         usu.setEmail("prueba2.@gmail.com");
-        DAOImplementation prueba = new DAOImplementation(con);
+        DAOImplementation prueba = new DAOImplementation();
         
        
         assertTrue("Si es true significa que hay un email identico"
-                , prueba.comprobarEmail(usu));
+                , prueba.comprobarEmail(usu, con));
     }
 
     /**
@@ -169,10 +169,10 @@ public class DAOImplementationTest {
         User usu = new User();
         usu.setUsername("Prueba2");
         usu.setPassword("777");
-        DAOImplementation prueba = new DAOImplementation(con);
+        DAOImplementation prueba = new DAOImplementation();
         
         assertTrue("Si es true significa que hay un password identico",
-                 prueba.comprobarPassword(usu));
+                 prueba.comprobarPassword(usu, con));
     }
     
 }

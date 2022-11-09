@@ -28,7 +28,7 @@ public class DAOFactoryTest {
         Connection con = null;
         DAOFactory instance = new DAOFactory();
         DAOImplementation expResult = null;
-        DAOImplementation result = instance.makeDao(con);
+        DAOImplementation result = instance.makeDao();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

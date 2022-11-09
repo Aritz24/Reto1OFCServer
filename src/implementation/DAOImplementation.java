@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import pool.ConnectionPool;
 
 
 import userPackage.*;
@@ -37,13 +38,13 @@ public class DAOImplementation implements mainInterface{
 
     private Connection con;
     private PreparedStatement stmt;
+    
 
     /**
-     * Implantation builder
-     * @param con The connection we will use for queries
+     * Implantation builder.
      */
-    public DAOImplementation(Connection con) {
-         this.con=con;
+    public DAOImplementation() {
+         
     }
     
     private final String selectUserpasswd="SELECT * FROM user WHERE Login = ? "
@@ -71,18 +72,18 @@ public class DAOImplementation implements mainInterface{
     
     
     @Override
-    public synchronized User signIn(User usu) throws LoginUsernameException,
+    public User signIn(User usu) throws LoginUsernameException,
             LoginPasswordException,
             LoginUsernameAndPasswordException, ServerConnectionException {
-        
+        con= (Connection) ConnectionPool.getConnnection();
         ResultSet rs = null;
          String enume;
          int id = 0;
        
-        if (!comprobarUsuario(usu)) {
+        if (!comprobarUsuario(usu, con)) {
             throw new LoginUsernameException("");
         }
-        if (!comprobarPassword(usu)) {
+        if (!comprobarPassword(usu, con)) {
             throw new LoginPasswordException("");
         }
         try {
@@ -136,20 +137,26 @@ public class DAOImplementation implements mainInterface{
                     Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            lastSignIn(id);
+            lastSignIn(id, con);
             
         }
         return usu;
     }
     
-    public void lastSignIn(int id){
+    /**
+     * In this method we enter a timestamp in the table signIn.
+     * @param id User id.
+     * @param con
+     */
+    public void lastSignIn(int id, Connection con){
         ResultSet rs = null;
+         
         try {
             
-            int count= lastSignInCount(id);
+            int count= lastSignInCount(id,con);
             
             if (count==10) {
-                removeLastSignIn(id, firstLastSignIn(id));
+                removeLastSignIn(id, firstLastSignIn(id, con),con);
             }
             stmt = con.prepareStatement(insertLastSignIn);
             
@@ -168,8 +175,16 @@ public class DAOImplementation implements mainInterface{
     }
     
   
-    public Timestamp firstLastSignIn(int id){
+    /**
+     * En este método recogemos el timestamp menos reciente que tiene el
+     * usuario.
+     * @param id User id.
+     * @param con
+     * @return Returns the least recent login.
+     */
+    public Timestamp firstLastSignIn(int id, Connection con){
          ResultSet rs = null;
+         
         try {
            
             stmt = con.prepareStatement(selectFirstLastSignIn);
@@ -201,8 +216,15 @@ public class DAOImplementation implements mainInterface{
         
     }
     
-    public int lastSignInCount(int id){
+    /**
+     * In this method we count how many logins a given client has.
+     * @param id User id.
+     * @param con
+     * @return Returns the count of the least recent login.
+     */
+    public int lastSignInCount(int id, Connection con){
         ResultSet rs = null;
+        
         try {
             
             stmt = con.prepareStatement(selectLastSignInCount);
@@ -234,8 +256,15 @@ public class DAOImplementation implements mainInterface{
         
     }
     
-    public void removeLastSignIn(int id, Timestamp tm){
-       
+    /**
+     * In this method we delete from the signIn table the date of the least. 
+     * recent login of a specific client.
+     * @param id User id.
+     * @param tm The timestamp we want to remove.
+     * @param con
+     */
+    public void removeLastSignIn(int id, Timestamp tm, Connection con){
+      
         try {
             ResultSet rs = null;
             stmt = con.prepareStatement(removeFirstSignIn);
@@ -257,17 +286,17 @@ public class DAOImplementation implements mainInterface{
     }
 
     @Override
-    public synchronized void signUp(User usu) throws SignUpUsernameException, SignUpEmailException, SignUpEmailAndUsernameException, ServerConnectionException {
-
-        if (comprobarUsuario(usu)) {
+    public void signUp(User usu) throws SignUpUsernameException, SignUpEmailException, SignUpEmailAndUsernameException, ServerConnectionException {
+        con = (Connection) ConnectionPool.getConnnection();
+        if (comprobarUsuario(usu, con)) {
             throw new SignUpUsernameException("");
         }
-        if (comprobarEmail(usu)) {
+        if (comprobarEmail(usu, con)) {
             throw new SignUpEmailException("");
         }
         try {
-           stmt = con.prepareStatement(insertUser);
-            
+            stmt = con.prepareStatement(insertUser);
+
             stmt.setString(1, usu.getUsername());
             stmt.setString(2, usu.getEmail());
             stmt.setString(3, usu.getFullname());
@@ -291,11 +320,12 @@ public class DAOImplementation implements mainInterface{
     /**
      * We check that the name of the user you want to enter exist.
      *
-     * @param usu User data
+     * @param usu User data.
+     * @param con
      * @return Returns true if it finds an identical username and false if it
      * does not.
      */
-    public boolean comprobarUsuario(User usu) {
+    public boolean comprobarUsuario(User usu, Connection con) {
         ResultSet rs = null;
         Boolean salida = true;
 
@@ -329,31 +359,33 @@ public class DAOImplementation implements mainInterface{
         return false;
 
     }
-    
+
     /**
      * We check that the email of the user you want to enter is not repeated.
-     * @param usu User data
-     * @return Returns true if it finds an identical email and false
-     * if it does not.
+     *
+     * @param usu User data.
+     * @param con
+     * @return Returns true if it finds an identical email and false if it does
+     * not.
      */
-    public boolean comprobarEmail(User usu){
-         ResultSet rs= null;
+    public boolean comprobarEmail(User usu, Connection con) {
+        ResultSet rs = null;
         
         try {
-          stmt =  con.prepareStatement(selectEmail);
-            
+            stmt = con.prepareStatement(selectEmail);
+
             stmt.setString(1, usu.getEmail());
-            
+
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-              return rs.getString("Email").equals(usu.getEmail());
+                return rs.getString("Email").equals(usu.getEmail());
 
             }
         } catch (SQLException ex) {
             Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
-        }finally{
-             try {
+        } finally {
+            try {
                 rs.close();
             } catch (SQLException ex) {
                 Logger.getLogger(DAOImplementation.class.getName()).log(Level.SEVERE, null, ex);
@@ -370,12 +402,13 @@ public class DAOImplementation implements mainInterface{
     }
     
     /**
-     * We check that the password of the user you want to enter exist
-     * @param usu User data
+     * We check that the password of the user you want to enter exist.
+     * @param usu User data.
+     * @param con
      * @return Returns true if it finds an identical password and false
      * if it does not.
      */
-       public boolean comprobarPassword(User usu){
+       public boolean comprobarPassword(User usu, Connection con){
          ResultSet rs= null;
         
         try {

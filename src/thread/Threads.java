@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import messagePackage.Message;
 import pool.ConnectionPool;
 import com.mysql.jdbc.Connection;
+import serverSocket.ThreadCounter;
 
 /**
  * In this class we maintain the connection to the client side and when that
@@ -44,7 +45,7 @@ public class Threads extends Thread {
     private ConnectionPool p;
     private Connection con;
     private final Logger LOGGER = Logger.getLogger("thread/Threads");
-    private static Integer hilos;
+    private static ThreadCounter hilos;
 
     /**
      * Thread builder
@@ -52,25 +53,20 @@ public class Threads extends Thread {
      * @param clientSocket Client conexion
      * @param hilos
      */
-    public Threads(Socket clientSocket, Integer hilos) {
+    public Threads(Socket clientSocket, ThreadCounter hilos) {
         this.s = clientSocket;
-        Threads.hilos = hilos;
-       
+        this.hilos = hilos;
+
     }
 
     /**
-     *
+     * 
      */
     @Override
     public void run() {
 
-        p = new ConnectionPool();
+    
 
-         /*try {
-                 sleep(50000);
-             } catch (InterruptedException ex) {
-                 Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
-             }*/
         try {
 
             menenv = new Message();
@@ -83,14 +79,9 @@ public class Threads extends Thread {
                 Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
             }
             con = (Connection) p.getConnnection();
-            /*try {
-                 sleep(10000);
-             } catch (InterruptedException ex) {
-                 Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
-             }*/
-
+          
             f = new DAOFactory();
-            dao = f.makeDao(con);
+            dao = f.makeDao();
 
             if (men.getUser() != null) {
                 env = new ObjectOutputStream(s.getOutputStream());
@@ -131,28 +122,31 @@ public class Threads extends Thread {
                 }
                 p.devolConnection(con);
                 env.writeObject(menenv);
+
                 
-                  try {
-                 sleep(10000);
-             } catch (InterruptedException ex) {
-                 Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
-             }
-                System.out.println(hilos);
-                hilos--;
-                System.out.println(hilos);
-                
-              
-               
+                /*try {
+                    sleep(10000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                }*/
+
+                hilos.setCount(hilos.getCount() - 1);
+                   s.close();
                 this.interrupt();
+                
             }
-            
 
         } catch (IOException ex) {
 
-            Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
-
-            hilos--;
-            this.interrupt();
+            try {
+                Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                
+                s.close();
+                hilos.setCount(hilos.getCount() - 1);
+                this.interrupt();
+            } catch (IOException ex1) {
+                Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex1);
+            }
         }
     }
 
