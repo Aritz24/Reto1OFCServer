@@ -57,8 +57,6 @@ public class ConnectionPool {
     }
 
     public static synchronized Connection getConnnection() {
-
-        
         if (pool.isEmpty()) {
             return (Connection) newConnection();
         } else {

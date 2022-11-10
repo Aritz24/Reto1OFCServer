@@ -20,7 +20,4 @@ public class ThreadCounter {
     public synchronized void setCount(Integer count) {
         this.count = count;
     }
-    
-    
-    
 }

@@ -9,10 +9,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ResourceBundle;
-import java.util.Scanner;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import thread.ExitThread;
 import thread.Threads;
 
@@ -43,7 +40,6 @@ public class Server {
      */
     public Server() {
 
-        Scanner sc = new Scanner(System.in);
         hilos.setCount(0);
         ExitThread ext= new ExitThread();
         ext.start();
@@ -64,8 +60,7 @@ public class Server {
 
                 } catch (IOException ex) {
                     LOGGER.severe(ex.getMessage());
-                    
-
+                   
                 } finally {
                     try {
                         ss.close();

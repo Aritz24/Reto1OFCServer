@@ -86,9 +86,9 @@ public class Threads extends Thread {
             }
           
             f = new DAOFactory();
-            LOGGER.info("CREANDO INTERFAZ");
+            LOGGER.info("CREANDO IMPLEMENTACION");
             dao = f.makeDao();
-            LOGGER.info("INTERFAZ CREADA");
+            LOGGER.info("INTERFAZ IMPLEMENTACION");
             if (men.getUser() != null) {
                 env = new ObjectOutputStream(s.getOutputStream());
                 if (men.getAcType().toString().equalsIgnoreCase("SIGNIN")) {
@@ -146,7 +146,7 @@ public class Threads extends Thread {
                 env.writeObject(menenv);
                 LOGGER.info("MENSAJE ENVIADO AL USUARIO");
 
-                
+                //Para comprobar las conexiones
                 /*try {
                     sleep(10000);
                 } catch (InterruptedException ex) {
@@ -156,7 +156,7 @@ public class Threads extends Thread {
 
                 LOGGER.info("CERRANDO HILO Y CONEXION");
                 hilos.setCount(hilos.getCount() - 1);
-                   s.close();
+                s.close();
                 this.interrupt();
                 LOGGER.info("HILO Y CONEXION CERRADOS");
                 

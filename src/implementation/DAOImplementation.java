@@ -54,11 +54,6 @@ public class DAOImplementation implements mainInterface{
     private final String insertUser="INSERT INTO user(Login,Email,FullName,"
             + "UserStatus,Privilege,Password,LastPasswordChange) "
             + "VALUES(?,?,?,?,?,?,now())";
-    private final String exitUser="INSERT INTO signin(LastSignIn,id) "
-            + "VALUES(CURRENT_TIMESTAMP(), (SELECT id FROM user WHERE "
-            + "Login = ?))";
-    private final String checkPassword = "SELECT * FROM user WHERE Login = ? "
-            + "and Password=?";
     private final String removeFirstSignIn = "DELETE FROM signin WHERE "
             + "LastSignIn = ? and id = ?";
     private final String selectFirstLastSignIn = "SELECT MIN(LastSignIn) FROM"
@@ -120,6 +115,7 @@ public class DAOImplementation implements mainInterface{
                 }
 
             }
+             lastSignIn(id, con);
 
         } catch (SQLException ex) {
             Logger.getLogger(DAOImplementation.class.getName()).
@@ -139,8 +135,6 @@ public class DAOImplementation implements mainInterface{
                     (Level.SEVERE, null, ex);
                 }
             }
-            lastSignIn(id, con);
-            
         }
         return usu;
     }
@@ -148,13 +142,11 @@ public class DAOImplementation implements mainInterface{
     /**
      * In this method we enter a timestamp in the table signIn.
      * @param id User id.
-     * @param con
+     * @param con The conection that we use
      */
-    public void lastSignIn(int id, Connection con){
-        ResultSet rs = null;
-         
+    public void lastSignIn(int id, Connection con){ 
+        
         try {
-            
             int count= lastSignInCount(id,con);
             
             if (count==10) {
@@ -184,7 +176,7 @@ public class DAOImplementation implements mainInterface{
      * En este método recogemos el timestamp menos reciente que tiene el
      * usuario.
      * @param id User id.
-     * @param con
+     * @param con The conection that we use
      * @return Returns the least recent login.
      */
     public Timestamp firstLastSignIn(int id, Connection con){
@@ -202,7 +194,7 @@ public class DAOImplementation implements mainInterface{
                 return rs.getTimestamp(1);
 
             }
-            return null;
+          
         } catch (SQLException ex) {
             Logger.getLogger(DAOImplementation.class.getName()).log
             (Level.SEVERE, null, ex);
@@ -227,7 +219,7 @@ public class DAOImplementation implements mainInterface{
     /**
      * In this method we count how many logins a given client has.
      * @param id User id.
-     * @param con
+     * @param con The conection that we use
      * @return Returns the count of the least recent login.
      */
     public int lastSignInCount(int id, Connection con){
@@ -339,7 +331,7 @@ public class DAOImplementation implements mainInterface{
      * We check that the name of the user you want to enter exist.
      *
      * @param usu User data.
-     * @param con
+     * @param con The conection that we use
      * @return Returns true if it finds an identical username and false if it
      * does not.
      */
@@ -427,7 +419,7 @@ public class DAOImplementation implements mainInterface{
     /**
      * We check that the password of the user you want to enter exist.
      * @param usu User data.
-     * @param con
+     * @param con The conection that we use
      * @return Returns true if it finds an identical password and false
      * if it does not.
      */

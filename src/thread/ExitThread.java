@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import pool.ConnectionPool;
 
 /**
- *
+ * In this class we close the server and close BD conections
  * @author 2dam
  */
 public class ExitThread extends Thread {
@@ -24,13 +24,11 @@ public class ExitThread extends Thread {
 
         LOGGER.info("PARA CERRAR EL SERVIDOR Y LAS CONEXIONES A"
                 + " LA BD ESCRIBA EXIT");
-        while (!this.isInterrupted()) {
-
+       
             if (sc.next().equalsIgnoreCase("Exit")) {
                 ConnectionPool.closeConnection();
                 this.interrupt();
             }
-        }
         exit(0);
     }
 }
