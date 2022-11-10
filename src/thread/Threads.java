@@ -5,6 +5,7 @@
  */
 package thread;
 
+import com.mysql.jdbc.Connection;
 import enumPackcage.ExceptionType;
 import exceptions.LoginPasswordException;
 import exceptions.LoginUsernameAndPasswordException;
@@ -23,7 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import messagePackage.Message;
 import pool.ConnectionPool;
-import com.mysql.jdbc.Connection;
+
 import serverSocket.ThreadCounter;
 
 /**
@@ -60,93 +61,120 @@ public class Threads extends Thread {
     }
 
     /**
-     * 
+     * We collect the customer's message and according to the action type will
+     * make the signIn or signup. If it does signin we will save the user data 
+     * returned from the database and if there is any error the exception will
+     * be sent. In signUp it will return null if everything has gone well,
+     * otherwise it will send the exception.
      */
     @Override
     public void run() {
 
-    
-
         try {
 
             menenv = new Message();
-
+            LOGGER.info("RECIBIENDO MENSAJE DEL USUARIO");
             recib = new ObjectInputStream(s.getInputStream());
             try {
                 men = (Message) recib.readObject();
+                LOGGER.info("MENSAJE DEL USUARIO RECIBIDO");
             } catch (ClassNotFoundException ex) {
+                LOGGER.info("RECEPCION DEL MENSAJE FALLIDO");
 
-                Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Threads.class.getName()).
+                        log(Level.SEVERE, null, ex);
             }
           
             f = new DAOFactory();
+            LOGGER.info("CREANDO INTERFAZ");
             dao = f.makeDao();
-
+            LOGGER.info("INTERFAZ CREADA");
             if (men.getUser() != null) {
                 env = new ObjectOutputStream(s.getOutputStream());
                 if (men.getAcType().toString().equalsIgnoreCase("SIGNIN")) {
                     try {
+                        LOGGER.info("ANIADIENDO USUARIO A LA BD Y "
+                                + "RECOGIENDO SUS DATOS");
                         menenv.setUser(dao.signIn(men.getUser()));
+                        LOGGER.info("USUARIO ANIADIDO Y DATOS RECOGIDOS");
 
                     } catch (LoginUsernameException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                        
+                        LOGGER.info(ex.getMessage());
                         menenv.setExType(ExceptionType.LOGINUSERNAMEEXCEPTION);
                     } catch (LoginPasswordException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                   
+                        LOGGER.info(ex.getMessage());
                         menenv.setExType(ExceptionType.LOGINPASSWORDEXCEPTION);
                     } catch (LoginUsernameAndPasswordException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
-                        menenv.setExType(ExceptionType.SIGNUPEMAILANDUSERNAMEEXCEPTION);
+                       
+                        LOGGER.info(ex.getMessage());
+                        menenv.setExType
+                        (ExceptionType.SIGNUPEMAILANDUSERNAMEEXCEPTION);
                     } catch (ServerConnectionException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(Threads.class.getName()).
+                                log(Level.SEVERE, null, ex);
                     }
 
-                } else if (men.getAcType().toString().equalsIgnoreCase("SIGNUP")) {
+                } else if (men.getAcType().toString().
+                        equalsIgnoreCase("SIGNUP")) {
                     try {
+                        LOGGER.info("INTRODUCIENDO UN NUEVO USUARIO EN LA BD");
                         dao.signUp(men.getUser());
+                        LOGGER.info("USUARIO NUEVO INTRODUCIDO");
 
                     } catch (SignUpUsernameException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                        LOGGER.info(ex.getMessage());
                         menenv.setExType(ExceptionType.SIGNUPUSERNAMEEXCEPTION);
 
                     } catch (SignUpEmailException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                      
+                        LOGGER.info(ex.getMessage());
                         menenv.setExType(ExceptionType.SIGNUPEMAILEXCEPTION);
                     } catch (SignUpEmailAndUsernameException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
-                        menenv.setExType(ExceptionType.SIGNUPEMAILANDUSERNAMEEXCEPTION);
+                        Logger.getLogger(Threads.class.getName()).
+                                log(Level.SEVERE, null, ex);
+                        LOGGER.info(ex.getMessage());
+                        menenv.setExType
+                        (ExceptionType.SIGNUPEMAILANDUSERNAMEEXCEPTION);
                     } catch (ServerConnectionException ex) {
-                        Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(Threads.class.getName()).
+                                log(Level.SEVERE, null, ex);
                     }
                 }
-               
+                LOGGER.info("ENVIANDO MENSAJE AL USUARIO");
                 env.writeObject(menenv);
+                LOGGER.info("MENSAJE ENVIADO AL USUARIO");
 
                 
                 /*try {
                     sleep(10000);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Threads.class.getName()).
+                log(Level.SEVERE, null, ex);
                 }*/
 
+                LOGGER.info("CERRANDO HILO Y CONEXION");
                 hilos.setCount(hilos.getCount() - 1);
                    s.close();
                 this.interrupt();
+                LOGGER.info("HILO Y CONEXION CERRADOS");
                 
             }
 
         } catch (IOException ex) {
 
             try {
-                Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Threads.class.getName()).
+                        log(Level.SEVERE, null, ex);
                 
                 s.close();
                 hilos.setCount(hilos.getCount() - 1);
                 this.interrupt();
             } catch (IOException ex1) {
-                Logger.getLogger(Threads.class.getName()).log(Level.SEVERE, null, ex1);
+                Logger.getLogger(Threads.class.getName()).
+                        log(Level.SEVERE, null, ex1);
             }
         }
     }
-
 }

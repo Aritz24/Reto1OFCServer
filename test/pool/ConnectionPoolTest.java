@@ -23,26 +23,25 @@ import static org.junit.Assert.*;
 public class ConnectionPoolTest {
     
    
-     private static String driver = ResourceBundle.getBundle("properties.PropertiesFile")
+     private static String driver = 
+             ResourceBundle.getBundle("properties.PropertiesFile")
             .getString("driver");
     
-        private static String url = ResourceBundle.getBundle("properties.PropertiesFile")
+        private static String url = 
+                ResourceBundle.getBundle("properties.PropertiesFile")
             .getString("url");
     
-        private static String user = ResourceBundle.getBundle("properties.PropertiesFile")
+        private static String user = 
+                ResourceBundle.getBundle("properties.PropertiesFile")
             .getString("username");
     
-        private static String password = ResourceBundle.getBundle("properties.PropertiesFile")
+        private static String password = 
+                ResourceBundle.getBundle("properties.PropertiesFile")
             .getString("password");
     
        private static Connection con;
        
-       
-    public ConnectionPoolTest() {
-        
       
-    }
-
 
     /**
      * Test of getConnnection method, of class ConnectionPool.
@@ -52,9 +51,14 @@ public class ConnectionPoolTest {
       
             Connection con = null;
         
-                assertEquals("Si no son iguales entonces la conexion ha"
-                        + " sido utilizada y sacada del pool",con
-                       , ConnectionPool.getConnnection());
+         try {
+             assertFalse("Si no son iguales entonces la conexion ha"
+                     + " sido utilizada y sacada del pool"
+                     , ConnectionPool.getConnnection().isClosed());
+         } catch (SQLException ex) {
+             Logger.getLogger(ConnectionPoolTest.class.getName()).
+                     log(Level.SEVERE, null, ex);
+         }
 
                 ConnectionPool.closeConnection();       
         
@@ -89,9 +93,10 @@ public class ConnectionPoolTest {
        
         try {
             assertTrue("", con.isClosed());
-             //assertTrue("Si es nulo entonces es que se ha cerrado", con2.isClosed());
+             
         } catch (SQLException ex) {
-            Logger.getLogger(ConnectionPoolTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConnectionPoolTest.class.getName()).
+                    log(Level.SEVERE, null, ex);
         }
         ConnectionPool.closeConnection();
 

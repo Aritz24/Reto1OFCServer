@@ -12,10 +12,6 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import userPackage.User;
@@ -30,24 +26,26 @@ public class DAOImplementationTest {
     
     private User usu;
     private com.mysql.jdbc.Connection con;
+    private static String driver = 
+             ResourceBundle.getBundle("properties.PropertiesFile")
+            .getString("driver");
+    
+        private static String url = 
+                ResourceBundle.getBundle("properties.PropertiesFile")
+            .getString("url");
+    
+        private static String user = 
+                ResourceBundle.getBundle("properties.PropertiesFile")
+            .getString("username");
+    
+        private static String password = 
+                ResourceBundle.getBundle("properties.PropertiesFile")
+            .getString("password");
+    
+       
    
     public DAOImplementationTest() {
-        
        
-        
-        String driver;
-        String url;
-        String user;
-        String password;
-        
-        driver = ResourceBundle.getBundle("properties.PropertiesFile")
-                .getString("driver");
-        url = ResourceBundle.getBundle("properties.PropertiesFile")
-                .getString("url");
-        user = ResourceBundle.getBundle("properties.PropertiesFile")
-                .getString("username");
-        password = ResourceBundle.getBundle("properties.PropertiesFile")
-                .getString("password");
         try {
             con = (Connection) DriverManager.getConnection(url, user, password);
             
@@ -57,22 +55,6 @@ public class DAOImplementationTest {
         
         }
        
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
     }
 
     /**

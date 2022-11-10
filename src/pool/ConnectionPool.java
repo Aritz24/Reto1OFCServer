@@ -42,6 +42,9 @@ public class ConnectionPool {
             .getString("password");
     
        private static Connection con;
+       
+       private static final Logger LOGGER= Logger.
+               getLogger("pool/ConnectionPool");
 
     /**
      * Checks if the Stack has connections and if it does, one of them is sent,
@@ -55,6 +58,7 @@ public class ConnectionPool {
 
     public static synchronized Connection getConnnection() {
 
+        
         if (pool.isEmpty()) {
             return (Connection) newConnection();
         } else {
@@ -73,8 +77,7 @@ public class ConnectionPool {
             con = (Connection) DriverManager.getConnection(url, user, password);
             return con;
         } catch (SQLException ex) {
-            Logger.getLogger(DAOImplementation.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            LOGGER.info(ex.getMessage());
         }
         return null;
 
@@ -101,7 +104,7 @@ public class ConnectionPool {
                 con.close();
             } catch (SQLException ex) {
                 Logger.getLogger(DAOImplementation.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                        .log(Level.SEVERE, null, ex.getMessage());
             }
         }
 

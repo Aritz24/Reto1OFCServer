@@ -31,6 +31,7 @@ public class Server {
     private static final Integer PUERTO =  Integer.valueOf(ResourceBundle.
             getBundle("properties.PropertiesFile").getString("port"));
     
+    
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -52,24 +53,24 @@ public class Server {
                 try {
                     ss = new ServerSocket(PUERTO);
                     clientSocket = ss.accept();
+                    LOGGER.info("CONEXION CON UN USUARIO ESTABLECIDA");
 
                     if (hilos.getCount() < 10) {
                         hilos.setCount(hilos.getCount() + 1);
                         th = new Threads(clientSocket, hilos);
+                        LOGGER.info("HILO CREADO E INICIALIZADO");
                         th.start();
                     }
 
                 } catch (IOException ex) {
                     LOGGER.severe(ex.getMessage());
-                    Logger.getLogger(ServerSocket.class.getName()).log(Level.
-                            SEVERE, null, ex);
+                    
 
                 } finally {
                     try {
                         ss.close();
                     } catch (IOException ex) {
-                        Logger.getLogger(ServerSocket.class.getName()).log(Level
-                                .SEVERE, null, ex);
+                        LOGGER.severe(ex.getMessage());
                     }
                 }
             }

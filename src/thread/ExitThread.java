@@ -14,28 +14,23 @@ import pool.ConnectionPool;
  *
  * @author 2dam
  */
-public class ExitThread extends Thread{
-    
-    
-    public static final Logger LOGGER= Logger.getLogger("thread/ExitThread");
+public class ExitThread extends Thread {
 
-     @Override
+    public static final Logger LOGGER = Logger.getLogger("thread/ExitThread");
+
+    @Override
     public void run() {
-        Scanner sc= new Scanner(System.in);
-    
+        Scanner sc = new Scanner(System.in);
+
         LOGGER.info("PARA CERRAR EL SERVIDOR Y LAS CONEXIONES A"
                 + " LA BD ESCRIBA EXIT");
-         while (!this.isInterrupted()) {             
-             
-             if (sc.next().equalsIgnoreCase("Exit")) {
-                 this.interrupt();
-                 ConnectionPool.closeConnection();
-                 
-             }
-         }
-         exit(0);
-}
+        while (!this.isInterrupted()) {
 
-    
-
+            if (sc.next().equalsIgnoreCase("Exit")) {
+                ConnectionPool.closeConnection();
+                this.interrupt();
+            }
+        }
+        exit(0);
+    }
 }
