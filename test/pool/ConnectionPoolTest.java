@@ -17,7 +17,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * In this class we test the ConnectionPool
  * @author Aritz
  */
 public class ConnectionPoolTest {
@@ -48,13 +48,10 @@ public class ConnectionPoolTest {
      */
     @Test
     public void testGetConnnection() {
-      
-            Connection con = null;
         
          try {
-             assertFalse("Si no son iguales entonces la conexion ha"
-                     + " sido utilizada y sacada del pool"
-                     , ConnectionPool.getConnnection().isClosed());
+             assertFalse("No ha cogido una conexion", 
+                     ConnectionPool.getConnnection().isClosed());
          } catch (SQLException ex) {
              Logger.getLogger(ConnectionPoolTest.class.getName()).
                      log(Level.SEVERE, null, ex);
@@ -102,6 +99,10 @@ public class ConnectionPoolTest {
 
     }
     
+    /**
+     *
+     * 
+     */
     public Connection BDcon(){
       
         try {

@@ -15,6 +15,9 @@ import interfacePackage.mainInterface;
  */
 public class DAOFactory {
 
+    /**
+     *
+     */
     public DAOFactory() {
          
     }

@@ -46,16 +46,17 @@ public class ConnectionPool {
        private static final Logger LOGGER= Logger.
                getLogger("pool/ConnectionPool");
 
+    
+    private ConnectionPool() {
+
+    }
+
     /**
      * Checks if the Stack has connections and if it does, one of them is sent,
      * if not, a new connection is created and sent.
      *
      * @return Retorna una conexion.
      */
-    private ConnectionPool() {
-
-    }
-
     public static synchronized Connection getConnnection() {
         if (pool.isEmpty()) {
             return (Connection) newConnection();
@@ -91,7 +92,7 @@ public class ConnectionPool {
     }
 
     /**
-     * Closes the connections to the DB
+     * Closes the connections with the DB
      */
     public static void closeConnection() {
         Connection con;
